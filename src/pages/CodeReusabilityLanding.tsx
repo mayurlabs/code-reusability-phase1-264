@@ -135,27 +135,26 @@ export default function CodeReusabilityLanding({
       </div>
 
       {/* ── Summary Stat Cards ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr', gap: 14, marginBottom: 16 }}>
-        {/* Health Score — wider card with breakdown */}
-        <div className="sf-stat-card" onClick={() => onViewReport(latestReport.id)} style={{ gridRow: 'span 1' }}>
-          <span className="stat-label">CODE REUSE HEALTH SCORE <InfoTooltip text={TIP['health-score']} /></span>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-            <span className="stat-value">78</span>
-            <span className="stat-delta positive">▲ +9 vs previous</span>
-          </div>
-          <ScoreBreakdown compact />
-        </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 14, marginBottom: 14 }}>
         {[
-          { label: 'CLONE GROUPS FOUND', value: '318', tip: TIP['clone-groups'] },
-          { label: 'EXACT DUPLICATES', value: '150', tip: TIP['exact-duplicates'] },
-          { label: 'NEAR DUPLICATES', value: '168', tip: TIP['near-duplicates'] },
-          { label: 'CHARS SAVED', value: '424,685', tip: TIP['chars-saved'] },
+          { label: 'HEALTH SCORE', value: '78', sub: '+9 vs previous', tip: TIP['health-score'] },
+          { label: 'CLONE GROUPS', value: '318', sub: null, tip: TIP['clone-groups'] },
+          { label: 'EXACT DUPLICATES', value: '150', sub: 'Easy cleanup', tip: TIP['exact-duplicates'] },
+          { label: 'NEAR DUPLICATES', value: '168', sub: 'Needs review', tip: TIP['near-duplicates'] },
+          { label: 'CHARS SAVED', value: '424,685', sub: null, tip: TIP['chars-saved'] },
         ].map((card, i) => (
           <div key={i} className="sf-stat-card" onClick={() => onViewReport(latestReport.id)}>
-            <span className="stat-label">{card.label}<InfoTooltip text={card.tip} /></span>
-            <span className="stat-value">{card.value}</span>
+            <span className="stat-label">{card.label} <InfoTooltip text={card.tip} /></span>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+              <span className="stat-value">{card.value}</span>
+              {card.sub && <span className={`stat-delta ${i === 0 ? 'positive' : ''}`} style={i !== 0 ? { fontSize: 11, color: 'var(--sf-text-secondary)', fontWeight: 500 } : undefined}>{i === 0 ? `▲ ${card.sub}` : card.sub}</span>}
+            </div>
           </div>
         ))}
+      </div>
+      {/* Score Breakdown — separate row */}
+      <div className="sf-card" style={{ marginBottom: 16, padding: '14px 18px' }}>
+        <ScoreBreakdown compact />
       </div>
 
       {/* ── Three Insight Columns ── */}

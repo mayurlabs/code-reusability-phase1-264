@@ -147,35 +147,35 @@ const highlightDot = (color: string, label: string, description: string) => (
 );
 
 const COMPARISON_ROWS = [
-  ['Finding duplicates', 'Exact text matching only', 'Semantic + structural + runtime similarity'],
-  ['Prioritization', 'No prioritization', 'Ranked by runtime usage and business impact'],
-  ['Safety check', 'None', 'Dependency analysis and migration readiness'],
-  ['Actionable guidance', '"These look similar"', 'Step-by-step cleanup plan with risk assessment'],
-  ['Progress tracking', 'No', 'Score trend over time'],
-  ['Multi-language', 'Usually single language', 'Apex, Triggers, LWC, Aura, VF, SOQL, Flows'],
+  ['Detection levels', 'File-level only', 'File, method, and block level (L0-L3)'],
+  ['Classification', 'No classification', 'business_logic, data_access_logic, orchestration, etc.'],
+  ['Refactoring guidance', '"These look similar"', 'Specific recipes: delete, extract, parameterize'],
+  ['Caller analysis', 'None', 'Shows who references each copy, safe-to-remove assessment'],
+  ['Effort estimation', 'None', 'LOW / MEDIUM / HIGH effort per group'],
+  ['Progress tracking', 'No', 'Score trend over time with improvement metrics'],
 ];
 
 const GLOSSARY: [string, string][] = [
-  ['Code Reuse Health Score', 'A 0–100 score measuring how well your org avoids unnecessary code duplication.'],
-  ['Finding', 'A group of similar code implementations that solve the same business problem.'],
-  ['Preferred Implementation', 'The version recommended to keep as the standard — usually the most used, best structured, and lowest risk.'],
-  ['Similar Implementation', 'Code that does the same thing as another implementation but with different syntax or approach.'],
-  ['Duplicate Code', 'Lines of logic that are identical across multiple implementations.'],
-  ['Runtime Priority', 'How important a finding is, based on how frequently the duplicated code runs in production.'],
-  ['Dependency', 'A relationship where one piece of code calls or relies on another.'],
-  ['Inbound Dependency', 'Another class or method that calls this implementation.'],
-  ['Outbound Dependency', 'A class or method that this implementation relies on.'],
-  ['Risk Level', 'How risky it is to change or remove an implementation, based on its dependencies.'],
-  ['Migration Ready', 'Whether an implementation\'s callers can be safely redirected to the preferred version.'],
-  ['Scan', 'An analysis of your org\'s codebase to identify reuse opportunities.'],
-  ['Scope', 'Which coding surfaces are included in a scan (Apex, Triggers, LWC, etc.).'],
-  ['Consolidation', 'Merging multiple similar implementations into one standard version.'],
-  ['Retirement', 'Safely removing an implementation after its callers have been migrated.'],
+  ['Clone Group', 'A set of 2 or more files, methods, or blocks that contain identical or nearly identical code.'],
+  ['Exact Duplicate', 'Code that is identical across copies — can be deleted without code changes.'],
+  ['Near Duplicate', 'Code that is very similar but has small differences — needs review before consolidating.'],
+  ['Representative', 'The copy recommended to keep as the surviving version.'],
+  ['Tier', 'Confidence/impact level: HIGH, MEDIUM, LOW.'],
+  ['Level', 'Detection granularity: file (entire file duplicated), method (specific method), block (code block within a method).'],
+  ['Category', 'Semantic classification: business_logic, data_access_logic, file_duplicate, orchestration, simple_logic, trivial_accessor.'],
+  ['Effort', 'Estimated refactoring complexity: LOW (simple deletion), MEDIUM (extract method), HIGH (complex restructuring).'],
+  ['Refactoring Recipe', 'The recommended action to remove duplication.'],
+  ['Score', '0-100 confidence score for each clone group.'],
+  ['Characters Saved', 'Total duplicate code measured in characters.'],
+  ['Referenced By', 'Other classes or components that call or import this code.'],
+  ['Safe to Remove', 'Whether a copy can be deleted without breaking dependent code.'],
+  ['Health Score', 'Composite score measuring overall code duplication in your org.'],
+  ['Scan', 'An analysis of your org\'s codebase to find duplicate code.'],
 ];
 
 const STEPS: { title: string; bullets: string[] }[] = [
   {
-    title: 'Generate a Scan',
+    title: 'Generate a Clone Detection Scan',
     bullets: [
       'Go to Code Reusability in Setup.',
       'Select your environment and scope.',
@@ -187,34 +187,32 @@ const STEPS: { title: string; bullets: string[] }[] = [
     title: 'Review the Summary',
     bullets: [
       'Check your Code Reuse Health Score and how it changed.',
-      'Look at the "What Improved" and "What Needs Attention" sections.',
-      'Identify the top recommended actions.',
+      'Review the clone groups found, and the exact vs near duplicate split.',
+      'Look at characters saved to understand the scale of duplication.',
     ],
   },
   {
-    title: 'Explore Findings',
+    title: 'Start with Easy Wins',
     bullets: [
-      'Open the full report to see all findings ranked by priority.',
-      'Start with the #1 finding — it has the highest business impact.',
-      'Review the code highlighting to see what\'s duplicated vs. unique.',
-      'Check dependencies before planning any changes.',
+      'Focus on exact duplicates first — these are identical copies with LOW effort.',
+      'Delete all but one copy and redirect callers to the representative.',
+      'File-level duplicates are the safest starting point.',
     ],
   },
   {
-    title: 'Ask Agentforce',
+    title: 'Review Near Duplicates',
+    bullets: [
+      'Open near-duplicate groups and compare the representative with each copy.',
+      'Check the highlighted differences to understand what varies.',
+      'Pick the recommended recipe: extract shared method or parameterize.',
+    ],
+  },
+  {
+    title: 'Ask Agentforce for Guidance',
     bullets: [
       'Click the Agentforce icon in the header.',
-      'Ask questions like "Is it safe to remove the legacy version?" or "What should I clean up first?"',
+      'Ask questions like "Is it safe to remove this copy?" or "What should I clean up first?"',
       'Get conversational guidance with step-by-step recommendations.',
-    ],
-  },
-  {
-    title: 'Take Action',
-    bullets: [
-      'Designate the preferred implementation as your org\'s standard.',
-      'Migrate callers from weaker versions to the standard.',
-      'Retire deprecated implementations after dependency validation.',
-      'Re-run the scan to measure improvement.',
     ],
   },
   {
@@ -288,8 +286,8 @@ export default function PlaybookPage({ onBack }: Props) {
               How to Use This Report
             </h1>
             <p style={{ fontSize: 14, color: '#6b7280', margin: '6px 0 0', lineHeight: 1.6, maxWidth: 680 }}>
-              A complete guide to understanding your Code Reusability scan, interpreting scores and
-              findings, and taking action to improve your org's code health.
+              A complete guide to understanding your Clone Detection scan, interpreting scores and
+              clone groups, and taking action to eliminate duplicate code in your org.
             </p>
           </div>
         </div>
@@ -303,20 +301,20 @@ export default function PlaybookPage({ onBack }: Props) {
           </div>
           <h2 className="sf-section-title" style={{ margin: 0 }}>
             <span style={{ color: '#6b7280', fontWeight: 600, marginRight: 8 }}>1.</span>
-            What is Code Reusability?
+            What is Clone Detection?
           </h2>
         </div>
         <p style={paragraph}>
-          Code Reusability is a Salesforce-native tool that analyzes your entire codebase to find
-          repeated logic and recommend how to simplify it. Instead of reading through thousands of
+          Clone Detection is a Salesforce-native tool that scans your Apex codebase to find
+          duplicate code and recommend how to eliminate it. Instead of reviewing thousands of
           files manually, it does the heavy lifting for you.
         </p>
         <ul style={{ margin: 0, paddingLeft: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
           {[
-            'Scans your entire Salesforce codebase across all development surfaces — Apex classes, triggers, LWC, Aura components, Visualforce pages, SOQL queries, and Flows.',
-            'Identifies repeated code patterns — places where similar logic exists in multiple files, even when the syntax differs.',
-            'Recommends which implementation to keep as the standard and which can be consolidated or removed.',
-            'Tracks improvement over time with a Code Reuse Health Score that shows whether your org is getting cleaner or more cluttered.',
+            'Scans your Salesforce Apex codebase to find duplicate code — files, methods, and blocks that are identical or nearly identical.',
+            'Detects 4 levels: L0 (file-level), L1 (exact method), L2 (fuzzy method), L3 (block-level).',
+            'Provides actionable refactoring recipes: delete duplicate, extract shared method, parameterize.',
+            'Tracks cleanup progress with a health score over time.',
           ].map((text, i) => (
             <li key={i} style={{ fontSize: 14, lineHeight: 1.7, color: 'var(--sf-text)' }}>{text}</li>
           ))}
@@ -335,9 +333,9 @@ export default function PlaybookPage({ onBack }: Props) {
           </h2>
         </div>
         <p style={paragraph}>
-          Static code scanners only find exact text matches. Code Reusability goes further — it
-          uses runtime data, dependency analysis, and semantic similarity to find code that does the
-          same thing <em>even if it's written differently</em>.
+          Basic duplicate finders only match at the file level. ApexGuru Clone Detection goes
+          further — it detects duplication at file, method, and block levels, classifies each
+          group by semantic category, and provides specific refactoring recipes.
         </p>
         <div style={{ overflowX: 'auto', marginTop: 8 }}>
           <table style={comparisonTable}>
@@ -345,10 +343,10 @@ export default function PlaybookPage({ onBack }: Props) {
               <tr style={{ background: '#f9fafb' }}>
                 <th style={{ ...thStyle, width: '22%' }}>Capability</th>
                 <th style={{ ...thStyle, width: '39%', color: '#9ca3af' }}>
-                  Static Scanner
+                  Basic Duplicate Finder
                 </th>
                 <th style={{ ...thStyle, width: '39%', color: '#0176d3' }}>
-                  Code Reusability
+                  ApexGuru Clone Detection
                 </th>
               </tr>
             </thead>
@@ -380,9 +378,9 @@ export default function PlaybookPage({ onBack }: Props) {
             lineHeight: 1.6,
           }}
         >
-          <strong>Bottom line:</strong> A static scanner tells you "these files look similar." Code
-          Reusability tells you "here are 5 implementations of pricing logic, here's which one is
-          best, here's what depends on each, and here are the safe steps to consolidate."
+          <strong>Bottom line:</strong> A basic duplicate finder tells you "these files look similar."
+          ApexGuru Clone Detection tells you "here are 7 copies of the same data view, here's
+          which one to keep, here's who calls each copy, and here's the recipe to safely remove the rest."
         </div>
       </div>
 
@@ -425,45 +423,45 @@ export default function PlaybookPage({ onBack }: Props) {
           {scoreBand('81–100', '#2e844a', 'Excellent', 'Well-standardized codebase with minimal redundancy.')}
         </div>
 
-        {/* 3.2 Findings */}
-        <h3 style={subheading}>3.2 &nbsp;Findings</h3>
+        {/* 3.2 Clone Groups */}
+        <h3 style={subheading}>3.2 &nbsp;Clone Groups</h3>
         <p style={paragraph}>
-          Each finding represents a group of similar code implementations that solve the same
-          business problem. Priority is based on runtime usage — higher usage means the duplication
-          has more business impact.
+          Each clone group represents a set of 2 or more files, methods, or blocks that contain
+          identical or nearly identical code. Groups are ranked by tier (confidence/impact) and
+          classified by category and effort level.
         </p>
-        <p style={{ ...paragraph, fontWeight: 600, marginBottom: 8 }}>Each finding shows:</p>
+        <p style={{ ...paragraph, fontWeight: 600, marginBottom: 8 }}>Each clone group shows:</p>
         <ul style={{ margin: '0 0 16px', paddingLeft: 20, display: 'flex', flexDirection: 'column', gap: 6 }}>
           {[
-            'The best version to keep (preferred implementation).',
-            'Other versions found, with usage data and similarity percentage.',
-            'What\'s the same across versions (safe to consolidate).',
-            'What\'s different (needs attention before merging).',
-            'Dependencies — what other code relies on each version.',
-            'Recommended cleanup steps.',
+            'Tier — HIGH, MEDIUM, or LOW confidence and impact.',
+            'Level — file (entire file duplicated), method (specific method), or block (code block within a method).',
+            'Category — semantic classification such as business_logic, data_access_logic, file_duplicate, orchestration.',
+            'Effort — estimated refactoring complexity: LOW (simple deletion), MEDIUM (extract method), HIGH (complex restructuring).',
+            'Refactoring recipe — the recommended action to remove the duplication.',
+            'Characters saved — total duplicate code measured in characters.',
           ].map((text, i) => (
             <li key={i} style={{ fontSize: 14, lineHeight: 1.65, color: 'var(--sf-text)' }}>{text}</li>
           ))}
         </ul>
 
-        {/* 3.3 Code Highlighting */}
-        <h3 style={subheading}>3.3 &nbsp;Code Highlighting</h3>
+        {/* 3.3 Representative vs Copies View */}
+        <h3 style={subheading}>3.3 &nbsp;Representative vs Copies View</h3>
         <p style={{ ...paragraph, marginBottom: 12 }}>
-          When you expand a finding, the code view uses color highlighting to show what's shared and
-          what's unique:
+          When you expand a clone group, the code view shows the representative (the copy to keep)
+          alongside each copy. Color highlighting shows what's identical and what differs:
         </p>
         <div style={{ marginBottom: 16 }}>
-          {highlightDot('#2e844a', 'Duplicate (Green)', '— This line is identical across implementations. Safe to keep once.')}
-          {highlightDot('#f59e0b', 'Similar (Yellow)', '— Same intent, slightly different syntax. Minor cleanup needed.')}
-          {highlightDot('#ea580c', 'Different (Orange)', '— Fundamentally different approach. Needs review before consolidation.')}
-          {highlightDot('#0176d3', 'Unique (Blue)', '— Only exists in this implementation. Evaluate whether to adopt or remove.')}
+          {highlightDot('#2e844a', 'Identical (Green)', '— This line is the same in both representative and copy. No changes needed.')}
+          {highlightDot('#f59e0b', 'Similar (Yellow)', '— Same intent, slightly different syntax (e.g., different parameter names).')}
+          {highlightDot('#ea580c', 'Different (Orange)', '— Different logic. Needs review before consolidation.')}
+          {highlightDot('#0176d3', 'Unique (Blue)', '— Only exists in this copy. Evaluate whether to adopt or discard.')}
         </div>
 
-        {/* 3.4 Dependencies */}
-        <h3 style={subheading}>3.4 &nbsp;Dependencies</h3>
+        {/* 3.4 Referenced By & Safe to Remove */}
+        <h3 style={subheading}>3.4 &nbsp;Referenced By &amp; Safe to Remove</h3>
         <p style={{ ...paragraph, marginBottom: 12 }}>
-          Every finding includes a dependency summary so you know how risky it is to change each
-          implementation:
+          Every copy in a clone group includes caller information so you know whether it's safe
+          to delete:
         </p>
         <div style={{ overflowX: 'auto' }}>
           <table style={comparisonTable}>
@@ -475,10 +473,10 @@ export default function PlaybookPage({ onBack }: Props) {
             </thead>
             <tbody>
               {[
-                ['Inbound', 'How many other classes/methods call this implementation.'],
-                ['Outbound', 'How many classes/methods this implementation depends on.'],
-                ['Risk Level', 'Low (safe to change), Moderate (some callers need updating), High (widely used, change carefully).'],
-                ['Migration Ready', 'Whether callers can be redirected to the preferred version without breaking changes.'],
+                ['Referenced By', 'Other classes, triggers, or components that call or import this file/method. These callers need to be redirected before the copy can be removed.'],
+                ['Safe to Remove', 'Whether this copy can be safely deleted. Depends on how many callers reference it and whether they can be redirected to the representative.'],
+                ['Representative', 'The copy recommended to keep as the surviving version. Other copies should be removed or consolidated into this one.'],
+                ['Copies', 'How many copies of this code exist. All copies contain the same or very similar logic.'],
               ].map(([metric, meaning], i) => (
                 <tr key={i}>
                   <td style={{ ...tdStyle, fontWeight: 600, whiteSpace: 'nowrap', color: 'var(--sf-text)' }}>{metric}</td>
@@ -563,14 +561,14 @@ export default function PlaybookPage({ onBack }: Props) {
           </h2>
         </div>
         <p style={{ ...paragraph, marginBottom: 16 }}>
-          You're not on your own. Here's how to get the most out of Code Reusability:
+          You're not on your own. Here's how to get the most out of Clone Detection:
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           {[
             {
               icon: <Zap size={18} color="#0176d3" />,
               title: 'Use Agentforce',
-              description: 'Click the AI assistant icon in the header for instant, conversational guidance on any finding or recommendation.',
+              description: 'Click the AI assistant icon in the header for instant, conversational guidance on any clone group or refactoring recipe.',
             },
             {
               icon: <Shield size={18} color="#7c3aed" />,
@@ -580,7 +578,7 @@ export default function PlaybookPage({ onBack }: Props) {
             {
               icon: <TrendingUp size={18} color="#2e844a" />,
               title: 'Salesforce Success Team',
-              description: 'Contact your Salesforce Success team for hands-on architecture reviews and cleanup strategy sessions.',
+              description: 'Contact your Salesforce Success team for hands-on architecture reviews and clone cleanup strategy sessions.',
             },
             {
               icon: <BookOpen size={18} color="#fe9339" />,

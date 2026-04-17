@@ -146,18 +146,14 @@ export default function CodeReusabilityLanding({
           <ScoreBreakdown compact />
         </div>
         {[
-          { label: 'HIGH-PRIORITY REUSE OPPORTUNITIES', value: '12', tip: TIP['high-priority'] },
-          { label: 'RECOMMENDED REUSABLE STANDARDS', value: '7', tip: TIP['reusable-standards'] },
-          { label: 'LOWER-VALUE VARIANTS', value: '19', tip: TIP['lower-value'] },
-          { label: 'SURFACES ANALYZED', value: null, sub: 'Apex, Triggers, LWC JS, SOQL', tip: TIP['surfaces'] },
+          { label: 'CLONE GROUPS FOUND', value: '318', tip: TIP['clone-groups'] },
+          { label: 'EXACT DUPLICATES', value: '150', tip: TIP['exact-duplicates'] },
+          { label: 'NEAR DUPLICATES', value: '168', tip: TIP['near-duplicates'] },
+          { label: 'CHARS SAVED', value: '424,685', tip: TIP['chars-saved'] },
         ].map((card, i) => (
           <div key={i} className="sf-stat-card" onClick={() => onViewReport(latestReport.id)}>
             <span className="stat-label">{card.label}<InfoTooltip text={card.tip} /></span>
-            {card.value ? (
-              <span className="stat-value">{card.value}</span>
-            ) : (
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#444', marginTop: 4 }}>{card.sub}</div>
-            )}
+            <span className="stat-value">{card.value}</span>
           </div>
         ))}
       </div>
@@ -167,12 +163,12 @@ export default function CodeReusabilityLanding({
         <div className="sf-insight-col">
           <div className="col-header">
             <CheckCircle2 size={18} color="#2e844a" />
-            <span>What Improved <InfoTooltip text={TIP['health-score']} /></span>
+            <span>Easy Wins <InfoTooltip text={TIP['health-score']} /></span>
           </div>
           {[
-            { text: 'Duplicate pricing rule variants reduced', detail: 'Period: Last 4 weeks' },
-            { text: 'Shared address validation standard adopted', detail: 'Period: Last 4 weeks' },
-            { text: '4 lower-value trigger helpers consolidated', detail: 'Period: Last 4 weeks' },
+            { text: '7 identical case data view files — delete 6 copies', detail: 'Effort: LOW' },
+            { text: '3 identical claims summary generators — delete 2', detail: 'Effort: LOW' },
+            { text: '2 identical feed comment trigger handlers', detail: 'Effort: LOW' },
           ].map((item, i) => (
             <div key={i} className="col-item" onClick={() => onViewReport(latestReport.id)}>
               <div>
@@ -186,12 +182,12 @@ export default function CodeReusabilityLanding({
         <div className="sf-insight-col">
           <div className="col-header">
             <AlertTriangle size={18} color="#fe9339" />
-            <span>What Needs Attention <InfoTooltip text={TIP['high-priority']} /></span>
+            <span>Needs Review <InfoTooltip text={TIP['near-duplicates']} /></span>
           </div>
           {[
-            { text: 'Opportunity scoring logic still duplicated across 5 classes', detail: 'Period: Last 4 weeks' },
-            { text: 'Quote sync REST wrappers remain fragmented', detail: 'Period: Last 4 weeks' },
-            { text: 'No preferred reusable standard for renewal processors', detail: 'Period: Last 4 weeks' },
+            { text: '6 near-duplicate listing data methods — need consolidation', detail: 'Effort: MEDIUM' },
+            { text: '8 repeated boolean evaluator methods', detail: 'Effort: MEDIUM' },
+            { text: '3 similar guest review builder methods', detail: 'Effort: MEDIUM' },
           ].map((item, i) => (
             <div key={i} className="col-item" onClick={() => onViewReport(latestReport.id)}>
               <div>
@@ -208,9 +204,9 @@ export default function CodeReusabilityLanding({
             <span>Recommended Actions <InfoTooltip text={TIP['recommendation']} /></span>
           </div>
           {[
-            { text: 'Review Pricing Rules Calculator Variants', detail: 'High Priority' },
-            { text: 'Standardize Address Validation Service Family', detail: 'Medium Priority' },
-            { text: 'Review Legacy Lead Scoring Utils for retirement', detail: 'Low Priority' },
+            { text: 'Start with file-level duplicates — lowest risk cleanup', detail: '142 groups' },
+            { text: 'Extract shared methods for listing data queries', detail: '6 copies → 1 method' },
+            { text: 'Parameterize boolean evaluator pattern', detail: '8 copies → 1 method' },
           ].map((item, i) => (
             <div key={i} className="col-item" onClick={() => onViewReport(latestReport.id)}>
               <div>

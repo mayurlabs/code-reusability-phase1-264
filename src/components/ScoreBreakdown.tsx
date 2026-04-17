@@ -1,12 +1,12 @@
 import { InfoTooltip } from './InfoTooltip';
 
 export const SCORE_DIMENSIONS = [
-  { key: 'duplication', label: 'Code Duplication', score: 72, color: '#0176d3', tip: 'How much repeated code exists across your org. Lower duplication = higher score.' },
-  { key: 'workflow', label: 'Workflow Impact', score: 81, color: '#2e844a', tip: 'How business-critical the duplicated code is. Less duplication in critical workflows = higher score.' },
-  { key: 'changeRisk', label: 'Change Risk', score: 68, color: '#fe9339', tip: 'How many places need updating when shared logic changes. Fewer update points = higher score.' },
-  { key: 'testing', label: 'Test Efficiency', score: 85, color: '#9050e9', tip: 'How much test maintenance is duplicated. Less duplicate testing = higher score.' },
-  { key: 'deps', label: 'Dependency Health', score: 79, color: '#0891b2', tip: 'How clean the dependency structure is across implementations. Fewer tangled dependencies = higher score.' },
-  { key: 'governor', label: 'Governor Limit Safety', score: 90, color: '#2e844a', tip: 'How many patterns have Salesforce governor limit risks. Fewer risks = higher score.' },
+  { key: 'duplication', label: 'Code Duplication', score: 72, color: '#0176d3', tip: 'Volume of duplicate code detected across your org. Less duplication = higher score.' },
+  { key: 'cleanup', label: 'Cleanup Readiness', score: 81, color: '#2e844a', tip: 'How many duplicates have LOW effort recipes (simple deletions). More easy wins = higher score.' },
+  { key: 'changeRisk', label: 'Change Risk', score: 68, color: '#fe9339', tip: 'How many callers need to be redirected when duplicates are removed. Fewer redirects = higher score.' },
+  { key: 'testing', label: 'Test Efficiency', score: 85, color: '#9050e9', tip: 'How much duplicate test coverage exists. Less duplicate testing = higher score.' },
+  { key: 'refs', label: 'Reference Safety', score: 79, color: '#0891b2', tip: 'How safely callers can be redirected to surviving copies. Cleaner references = higher score.' },
+  { key: 'compliance', label: 'Compliance', score: 90, color: '#2e844a', tip: 'Whether duplicates create governance or audit concerns. Fewer concerns = higher score.' },
 ];
 
 interface ScoreBreakdownProps {

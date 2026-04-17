@@ -51,11 +51,11 @@ const WELCOME_MESSAGE: AgentMessage = {
   id: 'welcome',
   role: 'bot',
   content:
-    "Hi, I'm Agentforce! I can help you understand your org's code patterns, find repeated logic, and recommend which implementations to keep. What would you like to explore?",
+    "Hi, I'm Agentforce! I can help you understand duplicate code in your org, find easy cleanup opportunities, and guide you through refactoring. What would you like to explore?",
   timestamp: new Date().toISOString(),
   actions: [
-    { label: 'Analyze my org for reuse opportunities', actionId: 'analyze-org' },
-    { label: 'Summarize my latest report', actionId: 'summarize-report' },
+    { label: 'Scan my org for duplicate code', actionId: 'analyze-org' },
+    { label: 'What are the easy wins?', actionId: 'easy-wins' },
     { label: "What's changed since my last scan?", actionId: 'report-comparison' },
   ],
 };
@@ -69,68 +69,79 @@ interface ActionResponse {
 
 const ACTION_RESPONSES: Record<string, ActionResponse> = {
   'analyze-org': {
-    processingMessage: 'Analyzing scan results...',
+    processingMessage: 'Scanning for duplicate code...',
     delay: 2500,
     content:
-      "Here's a summary of your latest Code Reuse scan:\n\n**Org:** Northstar Retail Group\n**Assets Analyzed:** 1,842 across Apex, Triggers, LWC, and SOQL\n**Score:** 78 (up 9 points from your last scan)\n\nI found **12 groups of similar code** that could be simplified:\n• **3 high priority** — repeated pricing and discount logic\n• **5 medium priority** — shared validation and date helpers\n• **4 low priority** — older patterns with limited usage\n\nThe biggest opportunity is in your **pricing and discount logic** — 5 similar implementations exist across different teams.",
+      "Here's a summary of your latest Clone Detection scan:\n\n**Org:** Northstar Retail Group\n**Files Analyzed:** 785\n**Clone Groups Found:** 318\n**Characters Saved:** 424,685\n\nBreakdown:\n• **142 file-level duplicates** — identical files that can be deleted\n• **126 method-level clones** — similar methods to extract and consolidate\n• **50 block-level clones** — repeated code blocks within methods\n\nThe easiest wins are the file-level duplicates — most are LOW effort deletions.",
     actions: [
-      { label: 'Tell me about the pricing logic', actionId: 'pricing-detail' },
-      { label: 'Which code can I consolidate or retire?', actionId: 'safe-remove' },
-      { label: 'Show me what improved since last time', actionId: 'report-comparison' },
+      { label: 'Show me the easy wins', actionId: 'easy-wins' },
+      { label: 'What are the biggest duplicates?', actionId: 'biggest' },
+      { label: 'What changed since last scan?', actionId: 'report-comparison' },
     ],
   },
-  'summarize-report': {
-    processingMessage: 'Analyzing scan results...',
-    delay: 2500,
-    content:
-      "Here's a summary of your latest Code Reuse scan:\n\n**Org:** Northstar Retail Group\n**Assets Analyzed:** 1,842 across Apex, Triggers, LWC, and SOQL\n**Score:** 78 (up 9 points from your last scan)\n\nI found **12 groups of similar code** that could be simplified:\n• **3 high priority** — repeated pricing and discount logic\n• **5 medium priority** — shared validation and date helpers\n• **4 low priority** — older patterns with limited usage\n\nThe biggest opportunity is in your **pricing and discount logic** — 5 similar implementations exist across different teams.",
-    actions: [
-      { label: 'Tell me about the pricing logic', actionId: 'pricing-detail' },
-      { label: 'Which code can I consolidate or retire?', actionId: 'safe-remove' },
-      { label: 'Show me what improved since last time', actionId: 'report-comparison' },
-    ],
-  },
-  'pricing-detail': {
-    processingMessage: 'Looking at pricing logic...',
-    delay: 2000,
-    content:
-      "Your org has **5 similar implementations** of pricing and discount calculation logic, spread across 3 teams:\n\n**Best version to keep:**\n`PricingRulesEngineV2.calculateDiscount()`\n• Owned by: Revenue Cloud Platform\n• Used 184,320 times in the last 30 days\n• Cleanest structure with the fewest dependencies\n\n**Other versions found:**\n\n1. `QuotePricingHelper.applyDiscountRules()`\n   Sales Operations — 48,112 uses/30d — Similar but lacks error handling\n\n2. `LegacyPriceCalcService.computePromoDiscount()`\n   Revenue Cloud — 1,904 uses/30d — Outdated, candidate for retirement after caller migration\n\n3. `DiscountRuleProcessor.evaluateThresholds()`\n   Core CRM — 18,602 uses/30d — Active but redundant\n\n4. `OpportunityPricingBranchHandler.applyDealDeskOverride()`\n   Sales Operations — 9,214 uses/30d — Trigger-based variant\n\nKeeping the best version and retiring the others could eliminate ~420 lines of redundant logic and reduce maintenance overhead.",
-    actions: [
-      { label: 'Is it safe to remove the legacy version?', actionId: 'safety-check' },
-      { label: "Compare what's the same vs different", actionId: 'comparison' },
-      { label: 'What should I do next?', actionId: 'recommendations' },
-    ],
-  },
-  'safe-remove': {
-    processingMessage: 'Checking code usage patterns...',
+  'easy-wins': {
+    processingMessage: 'Finding low-effort duplicates...',
     delay: 1800,
     content:
-      "Based on usage data, here are the implementations that could potentially be consolidated or retired:\n\n**Low usage — review for retirement after migration:**\n• `LegacyPriceCalcService.computePromoDiscount()` — only 1,904 uses/month, but has 2 active callers that need to be redirected first\n• 3 date-formatting helpers with under 500 uses/month — functionally identical to existing utilities\n\n**Medium usage — consolidate into preferred version:**\n• `QuotePricingHelper.applyDiscountRules()` — 48,112 uses/month, actively used but redundant\n\n**Keep as-is:**\n• `PricingRulesEngineV2.calculateDiscount()` — highest usage, best structure\n• `DiscountRuleProcessor.evaluateThresholds()` — still being reviewed\n\nI'd recommend starting with the legacy pricing service — it has the lowest risk.",
+      "Here are your easiest cleanup opportunities — exact duplicate files that can be deleted with LOW effort:\n\n1. `GetCasesByAssigneeIdDataView.cls` — 7 identical copies, 13,608 chars\n   Recipe: Delete 6 copies, keep 1, redirect callers\n\n2. `GuestPastClaimsSummaryGenerator.cls` — 3 identical copies, 6,654 chars\n   Recipe: Delete 2, keep 1\n\n3. `ClaimPaymentCurrencyTriggerHandler.cls` — 3 identical copies, 6,058 chars\n   Recipe: Delete 2, keep 1\n\n4. `FeedCommentTriggerHandler.cls` — 2 identical copies, 4,597 chars\n   Recipe: Delete 1, keep 1\n\nThese 4 groups alone could save ~30,917 characters of duplicate code with minimal risk.",
     actions: [
-      { label: 'Is it safe to remove the legacy version?', actionId: 'safety-check' },
-      { label: 'Tell me about the pricing logic', actionId: 'pricing-detail' },
+      { label: 'Tell me about the case data views', actionId: 'case-detail' },
+      { label: 'What needs more review?', actionId: 'near-dupes' },
+      { label: 'Go back to summary', actionId: 'analyze-org' },
+    ],
+  },
+  biggest: {
+    processingMessage: 'Finding largest duplicates...',
+    delay: 1800,
+    content:
+      "The largest duplicate code groups by characters saved:\n\n1. `GetCasesByAssigneeIdDataView.cls` — **13,608 chars** across 7 copies (file duplicate)\n2. `ViaductListingDataService.getListingD...` — **12,660 chars** across 6 copies (method clone)\n3. `ViaductReviewsService.buildGuestRevie...` — **8,260 chars** across 3 copies (method clone)\n4. `BooleanEqualityEvaluator.runEvaluator...` — **6,780 chars** across 8 copies (method clone)\n5. `GuestPastClaimsSummaryGenerator.cls` — **6,654 chars** across 3 copies (file duplicate)\n\nThe top 5 groups account for ~47,962 characters of duplicate code.",
+    actions: [
+      { label: 'Show me the easy wins', actionId: 'easy-wins' },
+      { label: 'What needs more review?', actionId: 'near-dupes' },
+      { label: 'Go back to summary', actionId: 'analyze-org' },
+    ],
+  },
+  'case-detail': {
+    processingMessage: 'Analyzing case data views...',
+    delay: 2000,
+    content:
+      "**GetCasesByAssigneeIdDataView.cls** — 7 identical copies\n\nThese are data view classes for the Case Management module. Each file extends `BaseDataView` and implements a `getCases()` method with a different filter field:\n\n• GetCasesByAssigneeIdDataView.cls (keep this one)\n• GetCasesByCaseFolderIdDataView.cls\n• GetCasesByCustomerDataView.cls\n• GetCasesByIdsDataView.cls\n• GetCasesByItemEntityTokenDataView.cls\n• GetCasesByListingIdDataView.cls\n• GetCasesByReservationDataView.cls\n\n**Recipe:** Delete 6 files. Keep `GetCasesByAssigneeIdDataView.cls` as the representative. Parameterize the filter field so one class handles all query types.\n\n**Callers:** Each copy is referenced by 1-2 controllers. All callers can be redirected to the surviving copy.\n\n**Effort:** LOW — straightforward file deletion + caller redirect.",
+    actions: [
+      { label: 'Is it safe to delete these?', actionId: 'safety-check' },
+      { label: 'What about near duplicates?', actionId: 'near-dupes' },
       { label: 'Go back to summary', actionId: 'analyze-org' },
     ],
   },
   'safety-check': {
-    processingMessage: 'Checking dependencies...',
+    processingMessage: 'Checking references...',
     delay: 2000,
     content:
-      "Let me check the dependencies for `LegacyPriceCalcService.computePromoDiscount()`:\n\n**What still depends on it:**\n• `PromoOverrideBatchProcessor` — a batch job that runs weekly\n• `LegacyDealDeskFlowAction` — connected to a Flow\n\n**Risk level: Medium**\nIt's rarely used (1,904 calls/month) but still has 2 active callers. You'd need to redirect those callers to the preferred version first.\n\n**The preferred version** (`PricingRulesEngineV2`) has:\n• 8 inbound callers (well-adopted)\n• Low dependency risk\n• Ready to be the standard\n\n**My recommendation:** Don't remove the legacy version yet. First, migrate the 2 remaining callers to the preferred version. Then it's safe to retire.",
+      "Checking callers for the 6 copies to be deleted:\n\n• `GetCasesByCaseFolderIdDataView.cls` — referenced by `CaseFolderController` → redirect to representative ✓\n• `GetCasesByCustomerDataView.cls` — referenced by `CustomerCasePanel` → redirect ✓\n• `GetCasesByIdsDataView.cls` — referenced by `CaseBatchProcessor` → redirect ✓\n• `GetCasesByItemEntityTokenDataView.cls` — referenced by `ItemTokenService` → redirect ✓\n• `GetCasesByListingIdDataView.cls` — referenced by `ListingCaseController` → redirect ✓\n• `GetCasesByReservationDataView.cls` — referenced by `ReservationCaseView` → redirect ✓\n\n**All 6 copies are safe to delete.** Each has only 1 caller that can be easily redirected to the surviving `GetCasesByAssigneeIdDataView.cls`.",
     actions: [
-      { label: 'What about the other versions?', actionId: 'pricing-detail' },
-      { label: "Compare what's the same vs different", actionId: 'comparison' },
-      { label: 'Create a cleanup plan', actionId: 'recommendations' },
+      { label: 'What about near duplicates?', actionId: 'near-dupes' },
+      { label: 'What should I do first?', actionId: 'recommendations' },
+      { label: 'Go back to summary', actionId: 'analyze-org' },
     ],
   },
-  comparison: {
-    processingMessage: 'Comparing implementations...',
-    delay: 2200,
+  'near-dupes': {
+    processingMessage: 'Analyzing near duplicates...',
+    delay: 2000,
     content:
-      "Here's how the 5 pricing implementations compare:\n\n**What's the same across all (safe to keep once):**\n• Price lookup from Pricebook — identical in all 5\n• Quantity threshold matching — same loop logic\n• Final price calculation — same formula\n• Regional adjustment — identical approach\n\n**What's different (needs attention):**\n• Error handling — preferred throws typed exceptions; legacy returns null silently\n• Discount source — preferred uses shared helper; legacy has inline database queries (governor limit risk)\n• Audit logging — only the preferred version logs pricing decisions for compliance\n\n**Missing from all versions:**\n• Discount ceiling enforcement — none of the 5 cap the maximum discount\n\n**Bottom line:** 60% of the logic is identical. The preferred version has the cleanest approach for the parts that differ.",
+      "Near duplicates require more review because the code isn't identical — there are small differences to resolve:\n\n**HIGH priority:**\n• `SummaryAuditGenerator.fetchGuestClaim...` — 2 copies, differs in error handling approach\n• `VlocitySummaryAuditGenerator.fetchHos...` — 2 copies, differs in data mapping logic\n• `ViaductListingDataService.buildListin...` — 2 copies, same listing construction with different field sets\n• `FSCEvidenceValidationController.compl...` — 2 copies, validation orchestration with different completion rules\n\n**MEDIUM priority:**\n• `ViaductListingDataService.getListingD...` — 6 copies, same query pattern with different filters\n• `ViaductReviewsService.buildGuestRevie...` — 3 copies, review builder with different guest types\n• `BooleanEqualityEvaluator.runEvaluator...` — 8 copies, simple boolean pattern repeated\n\n**Recipe for most:** Extract a shared method and parameterize the differences.",
     actions: [
-      { label: 'What should I do next?', actionId: 'recommendations' },
-      { label: 'Tell me about other repeated code', actionId: 'other-groups' },
+      { label: 'Tell me about the listing data methods', actionId: 'listing-detail' },
+      { label: 'What should I do first?', actionId: 'recommendations' },
+      { label: 'Go back to easy wins', actionId: 'easy-wins' },
+    ],
+  },
+  'listing-detail': {
+    processingMessage: 'Analyzing listing data service...',
+    delay: 1500,
+    content:
+      "`ViaductListingDataService.getListingD...` — 6 near-duplicate methods\n\nThese 6 methods all fetch listing data but with different filters:\n• `getListingDataByHostId()` — filters by host ID\n• `getListingDataByRegion()` — filters by region\n• `getListingDataByStatus()` — filters by listing status\n• `getListingDataByCategory()` — filters by category\n• `getListingDataByPrice()` — filters by price range\n• `getListingDataByAvailability()` — filters by date availability\n\n**What's the same:** SOQL query structure, field selection, response mapping, error handling\n**What's different:** Only the WHERE clause filter\n\n**Recipe:** Extract one `getListingData(FilterType, FilterValue)` method and pass the filter as a parameter. This eliminates 5 redundant methods.\n\n**Effort:** MEDIUM — need to update callers to pass the filter parameter.",
+    actions: [
+      { label: 'What should I do first?', actionId: 'recommendations' },
+      { label: 'Go back to near duplicates', actionId: 'near-dupes' },
       { label: 'Go back to summary', actionId: 'analyze-org' },
     ],
   },
@@ -138,102 +149,79 @@ const ACTION_RESPONSES: Record<string, ActionResponse> = {
     processingMessage: 'Building cleanup plan...',
     delay: 1800,
     content:
-      "Here's my recommended cleanup plan for the pricing logic:\n\n**Step 1:** Designate `PricingRulesEngineV2.calculateDiscount()` as your org's standard pricing method\n\n**Step 2:** Migrate the 2 callers of the legacy version to use the standard version\n\n**Step 3:** Retire `LegacyPriceCalcService` once callers are migrated\n\n**Step 4:** Review `QuotePricingHelper` — it's actively used but redundant. Plan to consolidate in a future sprint.\n\n**Step 5:** Re-run a Code Reuse scan after cleanup to measure improvement\n\nWould you like to explore anything else?",
+      "Here's my recommended cleanup plan, ordered by impact and effort:\n\n**Phase 1 — Easy wins (this sprint):**\n1. Delete 6 copies of `GetCasesByAssigneeIdDataView.cls` → saves 13,608 chars\n2. Delete 2 copies of `GuestPastClaimsSummaryGenerator.cls` → saves 6,654 chars\n3. Delete 2 copies of `ClaimPaymentCurrencyTriggerHandler.cls` → saves 6,058 chars\n4. Delete 1 copy of `FeedCommentTriggerHandler.cls` → saves 4,597 chars\n\n**Phase 2 — Method consolidation (next sprint):**\n5. Extract shared method for `ViaductListingDataService.getListingD...` (6 copies)\n6. Consolidate `BooleanEqualityEvaluator.runEvaluator...` (8 copies)\n7. Merge `ViaductReviewsService.buildGuestRevie...` (3 copies)\n\n**Phase 3 — Complex refactoring (plan for later):**\n8. Review and consolidate remaining HIGH-priority near duplicates\n\nRe-run the scan after each phase to measure improvement.",
     actions: [
-      { label: 'Tell me about other repeated code', actionId: 'other-groups' },
-      { label: "What's changed since last time?", actionId: 'report-comparison' },
+      { label: 'What changed since last scan?', actionId: 'report-comparison' },
+      { label: 'Go back to easy wins', actionId: 'easy-wins' },
       { label: 'Go back to summary', actionId: 'analyze-org' },
     ],
   },
   'report-comparison': {
-    processingMessage: 'Reviewing changes since last scan...',
+    processingMessage: 'Comparing scans...',
     delay: 1800,
     content:
-      "Comparing your latest scan (Mar 26) to the previous one (Mar 12):\n\n**Score: 69 → 78** (+9 points)\n\n**What improved:**\n• 3 duplicate pricing rule variants were consolidated\n• Address validation logic was standardized to one version\n• 4 rarely-used trigger helpers were cleaned up\n\n**Still needs work:**\n• Quote sync wrappers are still repeated across 5 files\n• Renewal date helpers are still duplicated\n• 1 new group of similar discount approval code was detected\n\nOverall, your org is trending in the right direction.",
+      "Comparing your latest scan (Mar 26) to the previous one (Mar 12):\n\n**Score: 69 → 78** (+9 points)\n\n**What improved:**\n• 12 file-level duplicates were deleted\n• 3 method-level clones were consolidated into shared methods\n• Total chars saved increased by 28,400\n\n**Still needs work:**\n• 142 file-level duplicates remain\n• 126 method-level clones still need review\n• 5 new clone groups detected in recent code changes\n\nOverall, your org is trending in the right direction.",
     actions: [
-      { label: 'Tell me about the pricing logic', actionId: 'pricing-detail' },
+      { label: 'Show me the easy wins', actionId: 'easy-wins' },
       { label: 'Run a new scan', actionId: 'new-scan' },
-      { label: 'Go back to summary', actionId: 'analyze-org' },
-    ],
-  },
-  'other-groups': {
-    processingMessage: 'Looking at other patterns...',
-    delay: 1500,
-    content:
-      "Beyond pricing logic, here are other groups of similar code I found:\n\n**Medium Priority:**\n• **Address Validation** — 4 similar implementations across Apex and LWC\n• **Quote Sync Wrappers** — 5 REST wrapper patterns with inconsistent retry logic\n• **Renewal Date Helpers** — 4 near-identical date normalization utilities\n• **Territory Assignment** — 6 variants of opportunity routing logic\n• **Forecast Rollup** — 3 identical aggregation utilities\n\n**Low Priority:**\n• **Invoice Tax Methods** — 4 similar tax computation approaches\n• **Case Escalation** — 5 trigger-based escalation branches\n• **Lead Scoring** — 3 legacy scoring implementations\n• **Discount Approval** — 4 threshold evaluators\n\nThe address validation and quote sync groups are the best candidates for cleanup after pricing.",
-    actions: [
-      { label: 'Tell me about address validation', actionId: 'address-detail' },
-      { label: 'Go back to pricing logic', actionId: 'pricing-detail' },
-      { label: 'Go back to summary', actionId: 'analyze-org' },
-    ],
-  },
-  'address-detail': {
-    processingMessage: 'Analyzing address validation code...',
-    delay: 1500,
-    content:
-      "Your org has **4 implementations** of address validation:\n\n**Best version to keep:**\n`AddressValidationOrchestrator.validate()`\n• Used across account creation, lead conversion, and contact imports\n• Strongest validation coverage\n\n**Other versions:**\n• `LeadAddressHelper.normalizeAndValidate()` — Apex, similar but missing country-code mapping\n• `CheckoutAddressValidator.runValidation()` — Apex, only used in checkout flow\n• `LwcAddressUtils.verifyPostalAddress()` — LWC JS, client-side regex fallback\n\nConsolidating could eliminate ~280 lines of redundant logic. The LWC variant should call the shared service instead of doing its own validation.",
-    actions: [
-      { label: 'What should I do next?', actionId: 'recommendations' },
-      { label: 'Go back to other groups', actionId: 'other-groups' },
       { label: 'Go back to summary', actionId: 'analyze-org' },
     ],
   },
 };
 
 const ACTION_LABELS: Record<string, string> = {
-  'analyze-org': 'Analyze my org for reuse opportunities',
-  'summarize-report': 'Summarize my latest report',
-  'pricing-detail': 'Tell me about the pricing logic',
-  'safe-remove': 'Which code can I consolidate or retire?',
-  'safety-check': 'Is it safe to remove the legacy version?',
-  comparison: "Compare what's the same vs different",
-  recommendations: 'What should I do next?',
+  'analyze-org': 'Scan my org for duplicate code',
+  'easy-wins': 'What are the easy wins?',
+  biggest: 'What are the biggest duplicates?',
+  'case-detail': 'Tell me about the case data views',
+  'safety-check': 'Is it safe to delete these?',
+  'near-dupes': 'What about near duplicates?',
+  'listing-detail': 'Tell me about the listing data methods',
+  recommendations: 'What should I do first?',
   'report-comparison': "What's changed since my last scan?",
-  'other-groups': 'Tell me about other repeated code',
-  'address-detail': 'Tell me about address validation',
   'new-scan': 'Run a new scan',
 };
 
 function getFreeFormResponse(text: string): ActionResponse {
   const lower = text.toLowerCase();
 
-  if (lower.includes('duplicate') || lower.includes('lines') || lower.includes('remove')) {
+  if (lower.includes('duplicate') || lower.includes('clone') || lower.includes('delete')) {
     return {
       processingMessage: 'Thinking...',
       delay: 1500,
       content:
-        'Based on the latest scan, your org has approximately **2,830 lines** of redundant logic that could be consolidated or retired through standardization. The biggest contributors are pricing logic (~420 lines), address validation (~280 lines), and quote sync wrappers (~350 lines).',
+        'Based on the latest scan, your org has **318 clone groups** with **424,685 characters** of duplicate code that could be removed. The biggest contributors are file-level duplicates (142 groups) and method-level clones (126 groups).',
       actions: [
-        { label: 'Tell me about the pricing logic', actionId: 'pricing-detail' },
-        { label: 'Which code can I consolidate or retire?', actionId: 'safe-remove' },
+        { label: 'Show me the easy wins', actionId: 'easy-wins' },
+        { label: 'What are the biggest duplicates?', actionId: 'biggest' },
         { label: 'Go back to summary', actionId: 'analyze-org' },
       ],
     };
   }
 
-  if (lower.includes('team')) {
+  if (lower.includes('safe') || lower.includes('remove')) {
     return {
       processingMessage: 'Thinking...',
       delay: 1500,
       content:
-        'Looking at code ownership, the **Revenue Cloud Platform** team has the most repeated code patterns — primarily around pricing calculations and discount logic. The **Sales Operations** team is next, with overlapping quote and deal desk utilities. I\'d recommend starting cleanup conversations with these two teams.',
+        "Before removing any duplicate, I'd recommend checking its callers first. Each copy may be referenced by controllers, triggers, or services that need to be redirected to the surviving copy. I can check specific files for you — just ask about a particular clone group.",
       actions: [
-        { label: 'Tell me about the pricing logic', actionId: 'pricing-detail' },
-        { label: 'Tell me about other repeated code', actionId: 'other-groups' },
+        { label: 'Is it safe to delete these?', actionId: 'safety-check' },
+        { label: 'Show me the easy wins', actionId: 'easy-wins' },
         { label: 'Go back to summary', actionId: 'analyze-org' },
       ],
     };
   }
 
-  if (lower.includes('safe') || lower.includes('retire') || lower.includes('legacy')) {
+  if (lower.includes('method') || lower.includes('extract') || lower.includes('consolidate')) {
     return {
       processingMessage: 'Thinking...',
       delay: 1500,
       content:
-        "Before retiring any legacy code, I'd recommend: (1) verify all callers have been migrated, (2) check for indirect references through Flows and Process Builder, and (3) run a usage report for the past 30 days. The safest candidates right now are `LegacyPriceCalcService` and 3 date-formatting helpers with minimal usage.",
+        'For near-duplicate methods, the best approach is to extract a shared method and parameterize the differences. For example, 6 copies of `ViaductListingDataService.getListingD...` all do the same SOQL query with different WHERE clauses — extracting one parameterized method eliminates 5 redundant copies.',
       actions: [
-        { label: 'Is it safe to remove the legacy version?', actionId: 'safety-check' },
-        { label: 'Which code can I consolidate or retire?', actionId: 'safe-remove' },
+        { label: 'Tell me about the listing data methods', actionId: 'listing-detail' },
+        { label: 'What about near duplicates?', actionId: 'near-dupes' },
         { label: 'Go back to summary', actionId: 'analyze-org' },
       ],
     };
@@ -241,18 +229,17 @@ function getFreeFormResponse(text: string): ActionResponse {
 
   if (
     lower.includes('report') ||
-    lower.includes('pdf') ||
-    lower.includes('download')
+    lower.includes('pdf')
   ) {
     return {
       processingMessage: 'Thinking...',
       delay: 1500,
       content:
-        'You can download a detailed PDF report from the Code Reusability landing page — look for the download icon next to your latest scan in the audit table. The report includes all similarity groups, usage metrics, and recommended actions.',
+        'You can download a detailed PDF report from the Clone Detection landing page — look for the download icon next to your latest scan in the audit table. The report includes all clone groups, character counts, and recommended recipes.',
       actions: [
-        { label: 'Analyze my org for reuse opportunities', actionId: 'analyze-org' },
+        { label: 'Scan my org for duplicate code', actionId: 'analyze-org' },
         { label: "What's changed since my last scan?", actionId: 'report-comparison' },
-        { label: 'Tell me about the pricing logic', actionId: 'pricing-detail' },
+        { label: 'Show me the easy wins', actionId: 'easy-wins' },
       ],
     };
   }
@@ -261,10 +248,10 @@ function getFreeFormResponse(text: string): ActionResponse {
     processingMessage: 'Thinking...',
     delay: 1500,
     content:
-      'I can help you explore your scan results. Try asking about specific code patterns, which implementations to keep, or what\'s safe to clean up.',
+      'I can help you explore your clone detection results. Try asking about duplicate files, easy wins, near duplicates, or what\'s changed since your last scan.',
     actions: [
-      { label: 'Analyze my org for reuse opportunities', actionId: 'analyze-org' },
-      { label: 'Tell me about the pricing logic', actionId: 'pricing-detail' },
+      { label: 'Scan my org for duplicate code', actionId: 'analyze-org' },
+      { label: 'What are the easy wins?', actionId: 'easy-wins' },
       { label: "What's changed since my last scan?", actionId: 'report-comparison' },
     ],
   };

@@ -165,9 +165,9 @@ export default function CodeReusabilityLanding({
             <span>Easy Wins <InfoTooltip text={TIP['health-score']} /></span>
           </div>
           {[
-            { text: '7 identical case data view files — delete 6 copies', detail: 'Effort: LOW' },
-            { text: '3 identical claims summary generators — delete 2', detail: 'Effort: LOW' },
-            { text: '2 identical feed comment trigger handlers', detail: 'Effort: LOW' },
+            { text: '7 identical case data view files — delete 6 copies', detail: 'Bug fix in 1 copy not applied to other 6 • 3 teams affected' },
+            { text: '3 identical claims summary generators — delete 2', detail: 'Currency format fix missing in 2 copies • Sprint change planned' },
+            { text: '2 identical feed comment trigger handlers', detail: 'Profanity filter updated in only 1 copy' },
           ].map((item, i) => (
             <div key={i} className="col-item" onClick={() => onViewReport(latestReport.id)}>
               <div>
@@ -184,9 +184,9 @@ export default function CodeReusabilityLanding({
             <span>Needs Review <InfoTooltip text={TIP['near-duplicates']} /></span>
           </div>
           {[
-            { text: '6 near-duplicate listing data methods — need consolidation', detail: 'Effort: MEDIUM' },
-            { text: '8 repeated boolean evaluator methods', detail: 'Effort: MEDIUM' },
-            { text: '3 similar guest review builder methods', detail: 'Effort: MEDIUM' },
+            { text: '6 near-duplicate listing data methods — need consolidation', detail: 'Changed 14 times in 90 days • Governor limit risk in 3 copies' },
+            { text: '8 repeated boolean evaluator methods', detail: 'Highest copy count in org • 320 lines of duplicate tests' },
+            { text: '3 similar guest review builder methods', detail: 'Scoring algorithm updated in only 1 of 3 copies' },
           ].map((item, i) => (
             <div key={i} className="col-item" onClick={() => onViewReport(latestReport.id)}>
               <div>

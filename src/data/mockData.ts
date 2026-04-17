@@ -39,6 +39,12 @@ export interface CloneCopy {
   differences?: DiffBlock[];
 }
 
+export interface CriticalitySignal {
+  icon: string;
+  label: string;
+  detail: string;
+}
+
 export interface CloneGroup {
   id: string;
   name: string;
@@ -54,6 +60,7 @@ export interface CloneGroup {
   recipeDetail: string;
   representative: CloneCopy;
   cloneCopies: CloneCopy[];
+  criticalitySignals: CriticalitySignal[];
   impact: {
     codeLines: string;
     workflows: string;
@@ -104,6 +111,12 @@ export const cloneGroups: CloneGroup[] = [
     isExact: true,
     recipe: 'Delete duplicate file. Keep one copy, remove the other 6, and redirect callers.',
     recipeDetail: 'All 7 files extend BaseDataView and expose a REST endpoint that runs a parameterized SOQL query against Case. The only difference is the WHERE clause filter field. Consolidate into a single class that accepts the filter field as a parameter.',
+    criticalitySignals: [
+      { icon: '🔄', label: 'High Change Frequency', detail: 'Modified 11 times in the last 90 days across 4 of 7 copies' },
+      { icon: '🐛', label: 'Bug Fix Drift', detail: 'A null-pointer fix was applied to GetCasesByAssigneeIdDataView but not to the other 6 copies' },
+      { icon: '👥', label: 'Cross-Team Ownership', detail: 'Owned by 3 different teams with no shared review process' },
+      { icon: '📡', label: 'Active Callers', detail: '15 controllers and services reference these copies across case management workflows' },
+    ],
     representative: {
       id: 'cg-001-rep',
       fileName: 'GetCasesByAssigneeIdDataView.cls',
@@ -523,6 +536,11 @@ export const cloneGroups: CloneGroup[] = [
     isExact: true,
     recipe: 'Delete duplicate file. These 3 files are identical.',
     recipeDetail: 'Three identical copies of the guest past-claims summary generator exist across different packages. They all query Claim__c records, aggregate totals, and produce a ClaimsSummaryDTO. Keep the version in the claims-core package and remove the other two.',
+    criticalitySignals: [
+      { icon: '🐛', label: 'Bug Fix Drift', detail: 'A currency formatting fix was applied to 1 copy but the other 2 still use the old format' },
+      { icon: '🔄', label: 'Recent Changes', detail: 'Modified 4 times in the last 60 days' },
+      { icon: '📋', label: 'Upcoming Release', detail: 'Claims summary logic is scheduled for changes in the next sprint' },
+    ],
     representative: {
       id: 'cg-002-rep',
       fileName: 'GuestPastClaimsSummaryGenerator.cls',
@@ -711,6 +729,11 @@ export const cloneGroups: CloneGroup[] = [
     isExact: true,
     recipe: 'Delete duplicate file.',
     recipeDetail: 'Three identical copies of the trigger handler for claim payment currency conversion. The handler converts claim amounts from local currency to the corporate currency using exchange rates. Keep the version registered in the trigger framework.',
+    criticalitySignals: [
+      { icon: '⚡', label: 'Governor Limit Risk', detail: '2 of 3 copies contain SOQL inside a trigger loop — risk of hitting query limits on bulk operations' },
+      { icon: '🔄', label: 'Change Frequency', detail: 'Exchange rate logic was updated 6 times in the last 90 days' },
+      { icon: '🛡️', label: 'Compliance Impact', detail: 'Currency conversion accuracy affects financial reporting compliance' },
+    ],
     representative: {
       id: 'cg-003-rep',
       fileName: 'ClaimPaymentCurrencyTriggerHandler.cls',
@@ -918,6 +941,11 @@ export const cloneGroups: CloneGroup[] = [
     isExact: false,
     recipe: 'Extract shared method. Both methods fetch guest claims with minor parameter differences.',
     recipeDetail: 'SummaryAuditGenerator and VlocityAuditGenerator both contain a fetchGuestClaimData method that queries Claim__c and builds an audit record. The representative uses explicit error handling with try-catch; the copy uses a simplified approach returning null on failure. Merge into one method with configurable error strategy.',
+    criticalitySignals: [
+      { icon: '🐛', label: 'Inconsistent Error Handling', detail: 'Representative throws exceptions; copy silently returns null — same callers get different failure behavior' },
+      { icon: '🧪', label: 'Test Failure', detail: 'Copy has 2 failing unit tests related to null handling that representative passes' },
+      { icon: '📡', label: 'Active Callers', detail: '8 services call these methods across audit and compliance workflows' },
+    ],
     representative: {
       id: 'cg-004-rep',
       fileName: 'SummaryAuditGenerator.cls',
@@ -1065,6 +1093,11 @@ export const cloneGroups: CloneGroup[] = [
     isExact: false,
     recipe: 'Extract shared method. Consolidate host summary fetching logic.',
     recipeDetail: 'Two methods fetch host summary data from Reservation__c with slightly different field selections and date filtering. The representative queries by host ID with a check-in date filter; the copy queries by listing ID with a created-date filter. The aggregation and DTO mapping logic is identical.',
+    criticalitySignals: [
+      { icon: '🔄', label: 'Change Frequency', detail: 'Host summary queries modified 5 times in the last 90 days' },
+      { icon: '📊', label: 'Data Inconsistency', detail: 'Different field selections produce different summary results for the same host' },
+      { icon: '👥', label: 'Cross-Team Ownership', detail: 'Owned by 2 teams — neither has visibility into the other copy' },
+    ],
     representative: {
       id: 'cg-005-rep',
       fileName: 'VlocitySummaryAuditGenerator.cls',
@@ -1212,6 +1245,10 @@ export const cloneGroups: CloneGroup[] = [
     isExact: true,
     recipe: 'Delete duplicate file.',
     recipeDetail: 'Two identical copies of the FeedComment trigger handler. Both filter profanity, validate mention permissions, and post moderation audit records. The copy was created during a sandbox refresh and never cleaned up.',
+    criticalitySignals: [
+      { icon: '📋', label: 'Sandbox Artifact', detail: 'Copy was created during a sandbox refresh 8 months ago and never cleaned up' },
+      { icon: '🔄', label: 'Recent Changes', detail: 'Profanity filter rules were updated in 1 copy but not the other' },
+    ],
     representative: {
       id: 'cg-006-rep',
       fileName: 'FeedCommentTriggerHandler.cls',
@@ -1354,6 +1391,10 @@ export const cloneGroups: CloneGroup[] = [
     isExact: true,
     recipe: 'Delete duplicate file.',
     recipeDetail: 'Two identical copies of the guest review summary generator. Both aggregate review scores and produce a ReviewSummaryDTO. The copy was introduced during a package restructuring.',
+    criticalitySignals: [
+      { icon: '📋', label: 'Package Restructure Artifact', detail: 'Copy was introduced during a package restructuring and is no longer needed' },
+      { icon: '🧪', label: 'Duplicate Tests', detail: '2 identical test classes exist — 140 lines of duplicate test code' },
+    ],
     representative: {
       id: 'cg-007-rep',
       fileName: 'GuestReviewSummaryGenerator.cls',
@@ -1475,6 +1516,11 @@ export const cloneGroups: CloneGroup[] = [
     isExact: false,
     recipe: 'Extract shared method. Listing data construction logic is nearly identical.',
     recipeDetail: 'Two methods construct a ListingDTO from a Listing__c record. The representative maps all standard fields including amenities; the copy omits amenities but adds a pricing breakdown. The core field mapping (name, location, host, status) is identical.',
+    criticalitySignals: [
+      { icon: '📊', label: 'Data Inconsistency', detail: 'One copy includes amenities, the other adds pricing — callers get different data for the same listing' },
+      { icon: '📡', label: 'Active Callers', detail: '6 LWC components reference these methods for listing display' },
+      { icon: '📋', label: 'Upcoming Release', detail: 'Listing data model changes are planned for next quarter — both copies will need updating' },
+    ],
     representative: {
       id: 'cg-008-rep',
       fileName: 'ViaductListingDataService.cls',
@@ -1602,6 +1648,11 @@ export const cloneGroups: CloneGroup[] = [
     isExact: false,
     recipe: 'Extract shared method. Validation orchestration can be parameterized.',
     recipeDetail: 'Two methods orchestrate evidence validation workflows: fetching evidence records, running validation rules, recording results, and updating the parent case status. The representative validates financial services evidence; the copy validates insurance evidence. The orchestration flow is identical but the validation rules differ.',
+    criticalitySignals: [
+      { icon: '🛡️', label: 'Compliance Impact', detail: 'Evidence validation logic affects regulatory compliance reporting' },
+      { icon: '🐛', label: 'Rule Drift', detail: 'Financial validation rules were updated but insurance validation rules were not — same orchestration, different rule outcomes' },
+      { icon: '📡', label: 'Active Callers', detail: '4 case management workflows depend on these validation methods' },
+    ],
     representative: {
       id: 'cg-009-rep',
       fileName: 'FSCEvidenceValidationController.cls',
@@ -1760,6 +1811,12 @@ export const cloneGroups: CloneGroup[] = [
     isExact: false,
     recipe: 'Extract and parameterize. 6 methods fetch listing data with different filters — consolidate into one configurable method.',
     recipeDetail: 'Six methods in different services query Listing__c with the same SELECT fields but different WHERE clauses. Each method filters by a different field (city, host, property type, status, price range, or availability dates). The DTO mapping and error handling are identical.',
+    criticalitySignals: [
+      { icon: '🔄', label: 'High Change Frequency', detail: 'Listing queries modified 14 times in the last 90 days across 4 of 6 copies' },
+      { icon: '⚡', label: 'Governor Limit Risk', detail: '3 copies use non-selective SOQL filters that could hit query limits at scale' },
+      { icon: '👥', label: 'Cross-Team Ownership', detail: 'Spread across 4 teams — changes in one copy are not propagated to others' },
+      { icon: '📡', label: 'High Caller Count', detail: '22 components reference these methods across search, browse, and booking workflows' },
+    ],
     representative: {
       id: 'cg-010-rep',
       fileName: 'ViaductListingDataService.cls',
@@ -2103,6 +2160,11 @@ export const cloneGroups: CloneGroup[] = [
     isExact: false,
     recipe: 'Extract and parameterize. Review construction logic differs only in guest type.',
     recipeDetail: 'Three methods build review DTOs for different guest types (standard guest, business traveler, VIP guest). The core review mapping is identical; the variations add type-specific enrichment fields.',
+    criticalitySignals: [
+      { icon: '📊', label: 'Data Inconsistency', detail: 'VIP guest reviews include loyalty tier data that standard and business copies miss' },
+      { icon: '🔄', label: 'Recent Changes', detail: 'Review scoring algorithm was updated in 1 of 3 copies last month' },
+      { icon: '📡', label: 'Active Callers', detail: '5 review display components use these methods' },
+    ],
     representative: {
       id: 'cg-011-rep',
       fileName: 'ViaductReviewsService.cls',
@@ -2284,6 +2346,10 @@ export const cloneGroups: CloneGroup[] = [
     isExact: false,
     recipe: 'Extract shared method. Simple boolean evaluation pattern is repeated 8 times.',
     recipeDetail: 'Eight methods implement the same pattern: retrieve a field value from a record, compare it against an expected value, and return a boolean result with optional logging. The methods differ only in the field name being evaluated and the comparison type (equality vs contains vs starts-with).',
+    criticalitySignals: [
+      { icon: '🔄', label: 'Copy Proliferation', detail: '8 copies — highest copy count in the org. Each new feature adds another copy of this pattern' },
+      { icon: '🧪', label: 'Duplicate Tests', detail: '8 nearly identical test methods — 320 lines of duplicate test code' },
+    ],
     representative: {
       id: 'cg-012-rep',
       fileName: 'BooleanEqualityEvaluator.cls',

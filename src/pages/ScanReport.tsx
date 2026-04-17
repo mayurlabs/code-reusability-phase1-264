@@ -370,6 +370,45 @@ function ExactDuplicateBody({ group }: { group: CloneGroup }) {
         <EffortBadge effort={group.effort} />
       </div>
 
+      {/* Criticality Signals */}
+      {group.criticalitySignals && group.criticalitySignals.length > 0 && (
+        <div style={{ marginBottom: 20 }}>
+          <div style={{
+            fontSize: 12,
+            fontWeight: 700,
+            color: group.tier === 'HIGH' ? '#ea001e' : group.tier === 'MEDIUM' ? '#b86e00' : '#2e844a',
+            textTransform: 'uppercase',
+            letterSpacing: '0.04em',
+            marginBottom: 8,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+          }}>
+            Why this is {group.tier} priority
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {group.criticalitySignals.map((signal, si) => (
+              <div key={si} style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: 10,
+                padding: '8px 12px',
+                background: group.tier === 'HIGH' ? '#fef5f5' : group.tier === 'MEDIUM' ? '#fefbf0' : '#f5faf5',
+                borderRadius: 6,
+                borderLeft: `3px solid ${group.tier === 'HIGH' ? '#ea001e' : group.tier === 'MEDIUM' ? '#fe9339' : '#2e844a'}`,
+                fontSize: 13,
+              }}>
+                <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>{signal.icon}</span>
+                <div>
+                  <span style={{ fontWeight: 600, color: 'var(--sf-text)' }}>{signal.label}:</span>{' '}
+                  <span style={{ color: 'var(--sf-text-secondary)' }}>{signal.detail}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* b. The Code */}
       <div style={{ marginBottom: 20 }}>
         <div style={{ ...labelStyle, marginBottom: 8, display: 'flex', alignItems: 'center' }}>
@@ -499,6 +538,45 @@ function NearDuplicateBody({ group }: { group: CloneGroup }) {
         </div>
         <EffortBadge effort={group.effort} />
       </div>
+
+      {/* Criticality Signals */}
+      {group.criticalitySignals && group.criticalitySignals.length > 0 && (
+        <div style={{ marginBottom: 20 }}>
+          <div style={{
+            fontSize: 12,
+            fontWeight: 700,
+            color: group.tier === 'HIGH' ? '#ea001e' : group.tier === 'MEDIUM' ? '#b86e00' : '#2e844a',
+            textTransform: 'uppercase',
+            letterSpacing: '0.04em',
+            marginBottom: 8,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+          }}>
+            Why this is {group.tier} priority
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {group.criticalitySignals.map((signal, si) => (
+              <div key={si} style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: 10,
+                padding: '8px 12px',
+                background: group.tier === 'HIGH' ? '#fef5f5' : group.tier === 'MEDIUM' ? '#fefbf0' : '#f5faf5',
+                borderRadius: 6,
+                borderLeft: `3px solid ${group.tier === 'HIGH' ? '#ea001e' : group.tier === 'MEDIUM' ? '#fe9339' : '#2e844a'}`,
+                fontSize: 13,
+              }}>
+                <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>{signal.icon}</span>
+                <div>
+                  <span style={{ fontWeight: 600, color: 'var(--sf-text)' }}>{signal.label}:</span>{' '}
+                  <span style={{ color: 'var(--sf-text-secondary)' }}>{signal.detail}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* b. Representative Code */}
       <div style={{ marginBottom: 20 }}>

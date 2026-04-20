@@ -125,6 +125,9 @@ export default function CodeReusabilityLanding({
           <button className="sf-btn" onClick={() => onViewReport(latestReport.id)}>
             <Eye size={14} /> View Full Report
           </button>
+          <button className="sf-btn" onClick={() => onViewReport('pdf')}>
+            <Download size={14} /> Download PDF
+          </button>
           <button className="sf-btn" onClick={() => onViewReport('playbook')}>
             <BarChart3 size={14} /> How to Use This Report
           </button>

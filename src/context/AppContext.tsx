@@ -24,7 +24,7 @@ interface Toast {
 
 interface AppContextValue {
   activePage: string;
-  currentView: 'landing' | 'report' | 'playbook';
+  currentView: 'landing' | 'report' | 'playbook' | 'pdf';
   currentReportId: string;
   toasts: Toast[];
   agentPanelOpen: boolean;
@@ -259,7 +259,7 @@ function getFreeFormResponse(text: string): ActionResponse {
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [activePage, setActivePageRaw] = useState('code-reusability');
-  const [currentView, setCurrentView] = useState<'landing' | 'report' | 'playbook'>('landing');
+  const [currentView, setCurrentView] = useState<'landing' | 'report' | 'playbook' | 'pdf'>('landing');
   const [currentReportId, setCurrentReportId] = useState('rpt-001');
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [agentPanelOpen, setAgentPanelOpen] = useState(false);

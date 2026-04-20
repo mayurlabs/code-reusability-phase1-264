@@ -5,6 +5,7 @@ import { LeftNav } from './components/LeftNav';
 import { AgentPanel } from './components/AgentPanel';
 import CodeReusabilityLanding from './pages/CodeReusabilityLanding';
 import ScanReport from './pages/ScanReport';
+import PdfReport from './pages/PdfReport';
 import PlaybookPage from './pages/PlaybookPage';
 import ApexGuruPage from './pages/ApexGuruPage';
 import CodeModernisationPage from './pages/CodeModernisationPage';
@@ -28,6 +29,8 @@ export default function App() {
   function handleViewReport(id: string) {
     if (id === 'playbook') {
       setCurrentView('playbook');
+    } else if (id === 'pdf') {
+      setCurrentView('pdf');
     } else {
       setCurrentReportId(id);
       setCurrentView('report');
@@ -50,6 +53,9 @@ export default function App() {
         }
         if (currentView === 'playbook') {
           return <PlaybookPage onBack={handleBackToLanding} />;
+        }
+        if (currentView === 'pdf') {
+          return <PdfReport onBack={handleBackToLanding} />;
         }
         return (
           <CodeReusabilityLanding

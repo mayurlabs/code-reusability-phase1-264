@@ -55,10 +55,10 @@ const totalCodebaseChars = 2400000;
 const GLOSSARY: [string, string][] = [
   ['Clone Group', 'A set of code fragments identified as duplicates or near-duplicates of each other.'],
   ['Exact Duplicate', 'Code fragments that are byte-identical except for whitespace and class/method names.'],
-  ['Near Duplicate', 'Code fragments that share the same structure but have minor differences in logic, parameters, or field references.'],
+  ['Near Duplicate', 'Code fragments that share the same structure but have minor differences in parameters, field references, or error handling.'],
   ['Tier', 'Priority ranking (HIGH, MEDIUM, LOW) based on impact, change frequency, and risk.'],
   ['Level', 'The granularity of the duplicate: File (entire file), Method (single method), or Block (code block within a method).'],
-  ['Category', 'The type of code being duplicated: business logic, data access, file duplicate, orchestration, simple logic, or trivial accessor.'],
+  ['Category', 'The classification of duplicated code: business_logic, data_access, file_duplicate, orchestration, simple_logic, or trivial_accessor.'],
   ['Effort', 'Estimated cleanup effort: LOW (delete/redirect), MEDIUM (extract & parameterize), HIGH (complex refactoring).'],
   ['Recipe', 'The recommended approach for eliminating the duplication.'],
   ['Representative', 'The canonical copy of the code — the version to keep when eliminating duplicates.'],
@@ -766,7 +766,7 @@ export default function PdfReport({ onBack }: Props) {
         {/* ── SECTION B: METHOD-LEVEL ── */}
         <SectionHeader label="Section B: Method-Level Duplicates" count={methodGroups.length} />
         <div style={{ fontSize: 12, color: '#54698d', marginBottom: 20, lineHeight: 1.5 }}>
-          Methods within different classes that contain identical or similar logic. Most require extracting a shared method.
+          Methods within different classes that contain identical or very similar code. Most require extracting a shared method.
         </div>
         {methodGroups.map((g, i) => (
           <FindingCard key={g.id} group={g} index={fileGroups.length + i} />
@@ -776,7 +776,7 @@ export default function PdfReport({ onBack }: Props) {
         {/* ── SECTION C: BLOCK-LEVEL ── */}
         <SectionHeader label="Section C: Block-Level Duplicates" count={blockGroups.length} />
         <div style={{ fontSize: 12, color: '#54698d', marginBottom: 20, lineHeight: 1.5 }}>
-          Repeated code blocks within methods — loop patterns, conditional logic, or query construction.
+          Repeated code blocks within methods — loop patterns, conditional branches, or query construction.
         </div>
         {blockGroups.length === 0 ? (
           <div style={{

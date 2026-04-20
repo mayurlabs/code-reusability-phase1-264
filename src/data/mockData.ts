@@ -508,7 +508,7 @@ export const cloneGroups: CloneGroup[] = [
     whereItAppears: ['Case Management', 'Guest Support Portal', 'Listing Management', 'Reservation Support'],
     whyItMatters: [
       'Seven identical files waste storage and create confusion about which version is canonical.',
-      'A bug fix to the DTO mapping logic must be applied 7 times.',
+      'A bug fix to the DTO mapping code must be applied 7 times.',
       'Each file has its own test class, multiplying test maintenance effort by 7x.',
     ],
     nextSteps: [
@@ -539,7 +539,7 @@ export const cloneGroups: CloneGroup[] = [
     criticalitySignals: [
       { icon: '🐛', label: 'Bug Fix Drift', detail: 'A currency formatting fix was applied to 1 copy but the other 2 still use the old format' },
       { icon: '🔄', label: 'Recent Changes', detail: 'Modified 4 times in the last 60 days' },
-      { icon: '📋', label: 'Upcoming Release', detail: 'Claims summary logic is scheduled for changes in the next sprint' },
+      { icon: '📋', label: 'Upcoming Release', detail: 'Claims summary code is scheduled for changes in the next sprint' },
     ],
     representative: {
       id: 'cg-002-rep',
@@ -696,7 +696,7 @@ export const cloneGroups: CloneGroup[] = [
     impact: {
       codeLines: '174 total lines across 3 files; 116 removable',
       workflows: 'Claims summary generation used by dashboard and batch jobs',
-      changeRisk: 'Low — byte-identical logic',
+      changeRisk: 'Low — byte-identical code',
       testSurface: '3 duplicate test classes',
       dependencies: '4 inbound callers',
     },
@@ -731,7 +731,7 @@ export const cloneGroups: CloneGroup[] = [
     recipeDetail: 'Three identical copies of the trigger handler for claim payment currency conversion. The handler converts claim amounts from local currency to the corporate currency using exchange rates. Keep the version registered in the trigger framework.',
     criticalitySignals: [
       { icon: '⚡', label: 'Governor Limit Risk', detail: '2 of 3 copies contain SOQL inside a trigger loop — risk of hitting query limits on bulk operations' },
-      { icon: '🔄', label: 'Change Frequency', detail: 'Exchange rate logic was updated 6 times in the last 90 days' },
+      { icon: '🔄', label: 'Change Frequency', detail: 'Exchange rate code was updated 6 times in the last 90 days' },
       { icon: '🛡️', label: 'Compliance Impact', detail: 'Currency conversion accuracy affects financial reporting compliance' },
     ],
     representative: {
@@ -907,14 +907,14 @@ export const cloneGroups: CloneGroup[] = [
     impact: {
       codeLines: '156 total lines across 3 files; 104 removable',
       workflows: 'Claim payment currency conversion on insert',
-      changeRisk: 'Low — identical logic, only class names differ',
+      changeRisk: 'Low — identical code, only class names differ',
       testSurface: '3 duplicate test classes',
       dependencies: '3 trigger registrations pointing to identical handlers',
     },
     whereItAppears: ['Claims Processing', 'Payment Management', 'Multi-Currency Support'],
     whyItMatters: [
-      'Multiple trigger handlers for the same logic risk double-execution if both triggers fire.',
-      'Exchange rate logic changes must be replicated across all 3 files.',
+      'Multiple trigger handlers for the same functionality risk double-execution if both triggers fire.',
+      'Exchange rate code changes must be replicated across all 3 files.',
     ],
     nextSteps: [
       'Deregister the legacy and sandbox trigger handlers.',
@@ -1051,21 +1051,21 @@ export const cloneGroups: CloneGroup[] = [
             lineRange: '27-30',
             representativeCode: '    } catch (Exception e) {\n        AuditErrorLogger.log(\'fetchGuestClaimData\', e);\n        throw new AuditException(\'Failed to fetch guest claim data: \' + e.getMessage());\n    }',
             copyCode: '    // (no try-catch — exceptions propagate to caller)',
-            description: 'Representative wraps logic in try-catch with error logging; copy lets exceptions propagate',
+            description: 'Representative wraps code in try-catch with error logging; copy lets exceptions propagate',
           },
         ],
       },
     ],
     impact: {
-      codeLines: '71 lines across 2 methods; ~30 lines of shared logic',
+      codeLines: '71 lines across 2 methods; ~30 lines of shared code',
       workflows: 'Audit report generation for guest claims',
       changeRisk: 'Medium — different error handling must be reconciled',
-      testSurface: '2 test classes with overlapping assertion logic',
+      testSurface: '2 test classes with overlapping test assertions',
       dependencies: '3 inbound callers across batch jobs and controllers',
     },
     whereItAppears: ['Claims Processing', 'Audit Reporting', 'Guest Support Portal'],
     whyItMatters: [
-      'Near-identical claim fetching logic diverges in error handling, creating inconsistent behavior.',
+      'Near-identical claim fetching code diverges in error handling, creating inconsistent behavior.',
       'A SOQL field change in Claim__c must be applied to both methods.',
     ],
     nextSteps: [
@@ -1074,7 +1074,7 @@ export const cloneGroups: CloneGroup[] = [
       'Consolidate test coverage into a single parameterized test class.',
     ],
     rationale: [
-      'Core query and aggregation logic is identical; only error handling and parameter names differ.',
+      'Core query and aggregation code is identical; only error handling and parameter names differ.',
       'The representative version is more robust with explicit error logging.',
     ],
   },
@@ -1091,8 +1091,8 @@ export const cloneGroups: CloneGroup[] = [
     charsSaved: 5270,
     score: 68,
     isExact: false,
-    recipe: 'Extract shared method. Consolidate host summary fetching logic.',
-    recipeDetail: 'Two methods fetch host summary data from Reservation__c with slightly different field selections and date filtering. The representative queries by host ID with a check-in date filter; the copy queries by listing ID with a created-date filter. The aggregation and DTO mapping logic is identical.',
+    recipe: 'Extract shared method. Consolidate host summary fetching code into a single shared method.',
+    recipeDetail: 'Two methods fetch host summary data from Reservation__c with slightly different field selections and date filtering. The representative queries by host ID with a check-in date filter; the copy queries by listing ID with a created-date filter. The aggregation and DTO mapping code is identical.',
     criticalitySignals: [
       { icon: '🔄', label: 'Change Frequency', detail: 'Host summary queries modified 5 times in the last 90 days' },
       { icon: '📊', label: 'Data Inconsistency', detail: 'Different field selections produce different summary results for the same host' },
@@ -1210,7 +1210,7 @@ export const cloneGroups: CloneGroup[] = [
       },
     ],
     impact: {
-      codeLines: '68 lines across 2 methods; ~50 lines of shared logic',
+      codeLines: '68 lines across 2 methods; ~50 lines of shared code',
       workflows: 'Host and listing performance reporting',
       changeRisk: 'Medium — different filter semantics must be parameterized',
       testSurface: '2 test classes with similar reservation factory methods',
@@ -1218,7 +1218,7 @@ export const cloneGroups: CloneGroup[] = [
     },
     whereItAppears: ['Host Dashboard', 'Listing Analytics', 'Payout Processing'],
     whyItMatters: [
-      'Identical aggregation logic maintained in two places risks drift when payout calculation rules change.',
+      'Identical aggregation code maintained in two places risks drift when payout calculation rules change.',
       'The HostSummaryDTO is reused but mapped differently, creating subtle bugs.',
     ],
     nextSteps: [
@@ -1226,7 +1226,7 @@ export const cloneGroups: CloneGroup[] = [
       'Update both callers to use the consolidated method.',
     ],
     rationale: [
-      'Aggregation logic (payout sum, average stay) is identical.',
+      'Aggregation code (payout sum, average stay) is identical.',
       'Only the SOQL WHERE clause and one SELECT field differ.',
     ],
   },
@@ -1373,7 +1373,7 @@ export const cloneGroups: CloneGroup[] = [
     ],
     rationale: [
       'The backup copy has zero inbound references — it is completely orphaned.',
-      'Identical logic means the backup provides no additional value.',
+      'Identical code means the backup provides no additional value.',
     ],
   },
 
@@ -1490,7 +1490,7 @@ export const cloneGroups: CloneGroup[] = [
     },
     whereItAppears: ['Guest Profiles', 'Review Management', 'Host Dashboard'],
     whyItMatters: [
-      'Duplicate review summary logic risks inconsistent rating calculations if one copy is updated.',
+      'Duplicate review summary code risks inconsistent rating calculations if one copy is updated.',
     ],
     nextSteps: [
       'Delete GuestReviewSummaryHelper.',
@@ -1514,7 +1514,7 @@ export const cloneGroups: CloneGroup[] = [
     charsSaved: 3225,
     score: 65,
     isExact: false,
-    recipe: 'Extract shared method. Listing data construction logic is nearly identical.',
+    recipe: 'Extract shared method. Listing data construction code is nearly identical across both methods.',
     recipeDetail: 'Two methods construct a ListingDTO from a Listing__c record. The representative maps all standard fields including amenities; the copy omits amenities but adds a pricing breakdown. The core field mapping (name, location, host, status) is identical.',
     criticalitySignals: [
       { icon: '📊', label: 'Data Inconsistency', detail: 'One copy includes amenities, the other adds pricing — callers get different data for the same listing' },
@@ -1649,7 +1649,7 @@ export const cloneGroups: CloneGroup[] = [
     recipe: 'Extract shared method. Validation orchestration can be parameterized.',
     recipeDetail: 'Two methods orchestrate evidence validation workflows: fetching evidence records, running validation rules, recording results, and updating the parent case status. The representative validates financial services evidence; the copy validates insurance evidence. The orchestration flow is identical but the validation rules differ.',
     criticalitySignals: [
-      { icon: '🛡️', label: 'Compliance Impact', detail: 'Evidence validation logic affects regulatory compliance reporting' },
+      { icon: '🛡️', label: 'Compliance Impact', detail: 'Evidence validation code affects regulatory compliance reporting' },
       { icon: '🐛', label: 'Rule Drift', detail: 'Financial validation rules were updated but insurance validation rules were not — same orchestration, different rule outcomes' },
       { icon: '📡', label: 'Active Callers', detail: '4 case management workflows depend on these validation methods' },
     ],
@@ -1777,14 +1777,14 @@ export const cloneGroups: CloneGroup[] = [
     impact: {
       codeLines: '72 lines across 2 methods; ~60 lines of shared orchestration',
       workflows: 'Evidence validation for FSC and Insurance case types',
-      changeRisk: 'Medium — status transition logic must remain consistent',
+      changeRisk: 'Medium — status transition code must remain consistent',
       testSurface: '2 test classes with overlapping evidence factory data',
       dependencies: '3 LWC components and controllers',
     },
     whereItAppears: ['Financial Services Case Management', 'Insurance Claims', 'Evidence Review Workflow'],
     whyItMatters: [
       'The validation orchestration (fetch, validate, update, set status) is duplicated with only the validation strategy differing.',
-      'Status transition logic changes must be applied in both places.',
+      'Status transition code changes must be applied in both places.',
     ],
     nextSteps: [
       'Extract a generic validateEvidence method that accepts a validation strategy interface.',
@@ -2098,7 +2098,7 @@ export const cloneGroups: CloneGroup[] = [
         ],
         referencedBy: ['SearchController', 'AvailabilityCalendarLWC'],
         safeToRemove: false,
-        safetyNote: 'Contains additional reservation-exclusion query; consolidation must preserve availability logic.',
+        safetyNote: 'Contains additional reservation-exclusion query; consolidation must preserve availability behavior.',
         differences: [
           {
             lineRange: '1',
@@ -2158,7 +2158,7 @@ export const cloneGroups: CloneGroup[] = [
     charsSaved: 8260,
     score: 55,
     isExact: false,
-    recipe: 'Extract and parameterize. Review construction logic differs only in guest type.',
+    recipe: 'Extract and parameterize. Review construction code differs only in guest type.',
     recipeDetail: 'Three methods build review DTOs for different guest types (standard guest, business traveler, VIP guest). The core review mapping is identical; the variations add type-specific enrichment fields.',
     criticalitySignals: [
       { icon: '📊', label: 'Data Inconsistency', detail: 'VIP guest reviews include loyalty tier data that standard and business copies miss' },
@@ -2786,7 +2786,7 @@ export const modernisationCandidates = [
   },
   {
     id: 'mod-004',
-    title: 'Extract CaseEscalation trigger logic into handler class',
+    title: 'Extract CaseEscalation trigger code into handler class',
     category: 'Architecture',
     impact: 'Medium',
     team: 'Service Cloud Team',

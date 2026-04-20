@@ -727,6 +727,37 @@ export default function PdfReport({ onBack }: Props) {
         <PageFooter section="Page 2" />
 
         {/* ── FINDINGS SUMMARY TABLE ── */}
+        {/* ── WHAT'S EXCLUDED ── */}
+        <div style={{ marginTop: 32, marginBottom: 20, padding: '12px 16px', background: '#f8f9fb', border: '1px solid #e0e4ea', borderRadius: 4, fontSize: 11, color: '#555', lineHeight: 1.7 }}>
+          <div style={{ fontWeight: 700, color: '#181818', marginBottom: 4, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.5px' }}>What This Scan Excludes</div>
+          Test classes (@IsTest) · Commented-out code blocks · Managed package stubs · Platform-required boilerplate (constructors, serialization) · Empty shell classes · Single-line accessor methods
+        </div>
+
+        {/* ── QUICK GLOSSARY ── */}
+        <div style={{ marginBottom: 24, border: '1px solid #e0e4ea', borderRadius: 4, overflow: 'hidden' }}>
+          <div style={{ padding: '8px 12px', background: '#f8f9fb', fontWeight: 700, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.5px', borderBottom: '1px solid #e0e4ea' }}>
+            Key Terms
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', fontSize: 10, lineHeight: 1.6 }}>
+            {[
+              ['Clone Group', 'A set of 2+ files or methods with identical or very similar code'],
+              ['Exact Duplicate', 'Identical code across copies — delete all but one'],
+              ['Near Duplicate', 'Very similar code with small differences — needs review'],
+              ['Tier', 'Priority: HIGH / MEDIUM / LOW based on change frequency and risk'],
+              ['Level', 'File (entire file), Method (specific method), or Block (code block)'],
+              ['Effort', 'LOW = delete, MEDIUM = extract method, HIGH = complex refactor'],
+              ['Recipe', 'Recommended action (e.g., "delete duplicate file")'],
+              ['Chars Saved', 'Duplicate code in characters — removing it reduces codebase size'],
+              ['Representative', 'The copy to keep; others should be consolidated into it'],
+              ['Safe to Remove', 'Whether a copy can be deleted now or needs caller redirect first'],
+            ].map(([term, def], i) => (
+              <div key={i} style={{ padding: '4px 12px', background: i % 2 === 0 ? '#fff' : '#fafbfc', borderBottom: '1px solid #f0f2f5' }}>
+                <strong>{term}:</strong> {def}
+              </div>
+            ))}
+          </div>
+        </div>
+
         <div style={{
           fontSize: 16,
           fontWeight: 700,
@@ -735,7 +766,6 @@ export default function PdfReport({ onBack }: Props) {
           letterSpacing: '1px',
           borderBottom: '2px solid #181818',
           paddingBottom: 8,
-          marginTop: 40,
           marginBottom: 16,
         }}>
           All Findings

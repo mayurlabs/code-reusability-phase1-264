@@ -1141,6 +1141,65 @@ export default function ScanReport({ reportId, onBack }: Props) {
         </div>
       </div>
 
+      {/* ── What's Excluded ── */}
+      <div style={{
+        background: '#f8f9fb',
+        border: '1px solid #e0e4ea',
+        borderRadius: 8,
+        padding: '14px 20px',
+        marginBottom: 20,
+        fontSize: 12,
+        color: 'var(--sf-text-secondary)',
+        lineHeight: 1.7,
+      }}>
+        <div style={{ fontWeight: 700, color: 'var(--sf-text)', marginBottom: 6, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+          What this scan excludes
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 4 }}>
+          {[
+            'Test classes (@IsTest) — test code is excluded from duplication analysis',
+            'Commented-out code blocks — inactive code is not counted as duplication',
+            'Managed package stubs — auto-generated package placeholders are ignored',
+            'Platform-required boilerplate — constructors, serialization, and Salesforce-required patterns',
+            'Empty shell classes — classes with no meaningful implementation',
+            'Single-line accessor methods — trivial getters/setters below the detection threshold',
+          ].map((item, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, padding: '2px 0' }}>
+              <span style={{ color: '#969492', flexShrink: 0, marginTop: 1 }}>✕</span>
+              <span>{item}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Quick Glossary ── */}
+      <div className="sf-card" style={{ padding: 20, marginBottom: 20 }}>
+        <h3 style={{ fontSize: 13, fontWeight: 700, color: 'var(--sf-text)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+          Quick Glossary — Key Terms in This Report
+        </h3>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+          {[
+            { term: 'Clone Group', def: 'A set of 2+ files or methods that contain identical or very similar code.' },
+            { term: 'Exact Duplicate', def: 'Code that is identical across copies — can be deleted without code changes.' },
+            { term: 'Near Duplicate', def: 'Code that is very similar but has small differences in parameters, fields, or error handling.' },
+            { term: 'Tier (HIGH / MEDIUM / LOW)', def: 'The priority of the finding — based on change frequency, bug risk, and caller count.' },
+            { term: 'Level (File / Method / Block)', def: 'What is duplicated — an entire file, a specific method, or a code block within a method.' },
+            { term: 'Effort (LOW / MEDIUM / HIGH)', def: 'How much work is needed — LOW = simple deletion, MEDIUM = extract method, HIGH = complex refactor.' },
+            { term: 'Recipe', def: 'The recommended action — e.g., "delete duplicate file" or "extract shared method."' },
+            { term: 'Characters Saved', def: 'The amount of duplicate code measured in characters — removing it reduces your Apex codebase size.' },
+            { term: 'Representative', def: 'The copy recommended to keep. Other copies should be removed or consolidated into this one.' },
+            { term: 'Referenced By', def: 'Other classes, triggers, or components that call this code. Callers must be redirected before deletion.' },
+            { term: 'Safe to Remove', def: 'Whether this copy can be deleted now, or whether callers need to be redirected first.' },
+            { term: 'Health Score', def: 'A 0-100 score based on exact duplication (40%), near duplication (40%), and improvement trend (20%).' },
+          ].map((g, i) => (
+            <div key={i} style={{ padding: '6px 10px', background: i % 2 === 0 ? '#fafbfc' : '#fff', borderRadius: 4, fontSize: 12, lineHeight: 1.5 }}>
+              <span style={{ fontWeight: 700, color: 'var(--sf-text)' }}>{g.term}:</span>{' '}
+              <span style={{ color: 'var(--sf-text-secondary)' }}>{g.def}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* ── 5. What Changed ── */}
       <div className="sf-card" style={{ padding: 24, marginBottom: 20 }}>
         <h2

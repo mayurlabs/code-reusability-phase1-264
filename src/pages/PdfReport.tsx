@@ -3,7 +3,7 @@ import { ArrowLeft, Download, Printer } from 'lucide-react';
 import { scanReports, cloneGroups, scoreHistory } from '../data/mockData';
 import type { CloneGroup, CloneCopy } from '../data/mockData';
 import { useAppContext } from '../context/AppContext';
-import { SCORE_DIMENSIONS } from '../components/ScoreBreakdown';
+import { SCORE_DIMENSIONS, APEX_LIMIT } from '../components/ScoreBreakdown';
 
 interface Props {
   onBack: () => void;
@@ -576,6 +576,25 @@ export default function PdfReport({ onBack }: Props) {
         </div>
 
         <PageFooter section="Page 1" />
+
+        {/* ── APEX CHARACTER LIMIT ── */}
+        <div style={{ marginBottom: 32, padding: 16, border: '1px solid #fe933940', borderRadius: 6, background: '#fefbf0' }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#b86e00', marginBottom: 8 }}>
+            ⚠️ Apex Character Limit Usage
+          </div>
+          <div style={{ height: 16, background: '#e5e7eb', borderRadius: 4, overflow: 'hidden', marginBottom: 8, position: 'relative' }}>
+            <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: `${(APEX_LIMIT.afterCleanup / APEX_LIMIT.total) * 100}%`, background: '#0176d3', borderRadius: '4px 0 0 4px' }} />
+            <div style={{ position: 'absolute', left: `${(APEX_LIMIT.afterCleanup / APEX_LIMIT.total) * 100}%`, top: 0, height: '100%', width: `${(APEX_LIMIT.duplicated / APEX_LIMIT.total) * 100}%`, background: '#fe9339', opacity: 0.7 }} />
+          </div>
+          <div style={{ display: 'flex', gap: 24, fontSize: 11, color: '#555' }}>
+            <span><strong>{(APEX_LIMIT.used / 1_000_000).toFixed(1)}M</strong> / {(APEX_LIMIT.total / 1_000_000).toFixed(0)}M used ({APEX_LIMIT.usedPct}%)</span>
+            <span><strong style={{ color: '#b86e00' }}>{(APEX_LIMIT.duplicated / 1_000).toFixed(0)}K</strong> chars are duplicate</span>
+            <span>After cleanup: <strong style={{ color: '#2e844a' }}>{(APEX_LIMIT.afterCleanup / 1_000_000).toFixed(1)}M</strong> ({APEX_LIMIT.afterPct}%)</span>
+          </div>
+          <div style={{ fontSize: 11, color: '#666', marginTop: 6 }}>
+            Your org uses {APEX_LIMIT.usedPct}% of the 6M Apex character limit. Removing duplicate code would free {APEX_LIMIT.duplicatedPct}% of total capacity and bring usage to {APEX_LIMIT.afterPct}%.
+          </div>
+        </div>
 
         {/* ── EXECUTIVE SUMMARY ── */}
         <div style={{

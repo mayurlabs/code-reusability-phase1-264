@@ -31,7 +31,7 @@ import {
 import type { CloneGroup } from '../data/mockData';
 import { useAppContext } from '../context/AppContext';
 import { InfoTooltip, TIP } from '../components/InfoTooltip';
-import { ScoreBreakdown } from '../components/ScoreBreakdown';
+import { ScoreBreakdown, ApexLimitBar } from '../components/ScoreBreakdown';
 
 interface Props {
   reportId: string;
@@ -999,6 +999,9 @@ export default function ScanReport({ reportId, onBack }: Props) {
           </div>
         </div>
       </div>
+
+      {/* ── Apex Character Limit ── */}
+      <ApexLimitBar />
 
       {/* ── 4. Org Scan Summary ── */}
       <div className="sf-card" style={{ padding: 24, marginBottom: 20 }}>

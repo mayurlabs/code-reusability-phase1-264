@@ -15,7 +15,7 @@ import {
 import { useAppContext } from '../context/AppContext';
 import { scanReports } from '../data/mockData';
 import { InfoTooltip, TIP } from '../components/InfoTooltip';
-import { ScoreBreakdown } from '../components/ScoreBreakdown';
+import { ScoreBreakdown, ApexLimitBar } from '../components/ScoreBreakdown';
 
 interface CodeReusabilityLandingProps {
   onViewReport: (reportId: string) => void;
@@ -136,6 +136,9 @@ export default function CodeReusabilityLanding({
           </button>
         </div>
       </div>
+
+      {/* ── Apex Character Limit Bar ── */}
+      <ApexLimitBar />
 
       {/* ── Summary Stat Cards ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 14, marginBottom: 14 }}>
